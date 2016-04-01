@@ -10,3 +10,7 @@ Does not currently support custom object encodings, but should work with pretty
 much any other kind of data.
 
 Note that references are treated as regular integers.
+
+You can find a handy description of php's serialization format at:
+
+https://evertpot.com/133/
