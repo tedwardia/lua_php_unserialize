@@ -36,7 +36,7 @@ local function unserialize (data)
 	        chr = data:sub(offset, offset)
 		end
 		
-	    return {table.getn(buf), table.concat(buf,'')};
+	    return {#buf, table.concat(buf,'')};
 	end
 	
 	local function read_chrs(data, offset, length)
@@ -48,7 +48,7 @@ local function unserialize (data)
 		
 	        length = length - utf8Overhead(chr);
 		end
-	    return {table.getn(buf), table.concat(buf,'')};
+	    return {#buf, table.concat(buf,'')};
 	end
 
 	
@@ -106,8 +106,25 @@ local function unserialize (data)
                 error('SyntaxError', 'String length mismatch');
 			end
 		
-		elseif dtype == 'a' then
+		elseif (dtype == 'a') or (dtype == 'o')  then
 			readdata = {}
+
+            if dtype == 'o' then
+                ccount = read_until(data, dataoffset, ':');
+                
+                chrs         = tonumber(ccount[1]);
+                stringlength = tonumber(ccount[2]);
+                dataoffset = dataoffset + chrs + 2;
+                
+                readData = read_chrs(data, dataoffset, stringlength);
+                chrs     = readData[1];
+                readdata['_silly_serialized_object'] = readData[2];
+                dataoffset = dataoffset + chrs + 2;
+
+                if ((chrs ~= stringlength) and (chrs ~= string.length(readdata.length))) then
+                    error('SyntaxError', 'String length mismatch');
+                end
+            end
 			
 			keyandchrs = read_until(data, dataoffset, ':');
             chrs = tonumber(keyandchrs[1]);
@@ -132,6 +149,8 @@ local function unserialize (data)
 			
 			dataoffset = dataoffset + 1
 		else 
+            print(dtype)
+            print(dataoffset)
 			error('SyntaxError', 'Unknown / Unhandled data type(s): ' + dtype);
 		end
 		
@@ -140,6 +159,3 @@ local function unserialize (data)
 	
 	return _unserialize((data .. ''), 1)[3];
 end
-
-local thing = 'a:4:{s:3:"ugh";s:4:"that";s:6:"ughhhh";i:2;i:2;s:8:"whatever";i:3;i:4;}'
-print(unserialize(thing))
