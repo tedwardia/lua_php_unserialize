@@ -1,1 +1,12 @@
 lua port of PHP's unserialize function. Based off of:
+
+https://gist.github.com/cristobal/3647759
+
+Which in turn is based off of phpjs's implementation of unserialize:
+
+http://phpjs.org/functions/unserialize
+
+Does not currently support custom object encodings, but should work with pretty 
+much any other kind of data.
+
+Note that references are treated as regular integers.
