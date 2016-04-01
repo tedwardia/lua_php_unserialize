@@ -68,7 +68,7 @@ local function unserialize (data)
 		-- print ("dtype " .. dtype .. " offset " ..offset)
 
 		dataoffset = offset + 2
-		if (dtype == 'i') or (dtype == 'd') then
+		if (dtype == 'i') or (dtype == 'd') or (dtype == 'r') then
 			typeconvert = function(x) 
 				return tonumber(x) 
 			end
